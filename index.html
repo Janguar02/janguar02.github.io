@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="de" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Zeman IT – EDV & IT Hilfe in Wien & Umgebung – Schnell & zuverlässig</title>
+  <meta name="description" content="Schnelle Hilfe bei Computer, Fernseher, Drucker, WLAN und Handy – vor Ort in Wien & Umgebung oder per Fernwartung. Faire Preise, transparente Leistungen." />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Zeman IT – EDV & IT Hilfe – Schnell & zuverlässig" />
+  <meta property="og:description" content="Hilfe bei PC, TV, Drucker, WLAN, Smartphone. Vor Ort oder per Fernwartung – Wien & Umgebung." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://zeman-it.at" />
+  <meta property="og:image" content="https://zeman-it.at/og-image.jpg" />
+
+  <style>
+    /* ===== Base (Dark default) ===== */
+    :root{
+      --bg:#0f172a;            /* slate-900 */
+      --panel:#111827;         /* gray-900  */
+      --text:#e5e7eb;          /* gray-200  */
+      --muted:#9ca3af;         /* gray-400  */
+      --brand:#7c3aed;         /* violet-600*/
+      --brand-contrast:#f5f3ff;/* violet-50 */
+      --accent:#22c55e;        /* green-500 */
+      --danger:#ef4444;        /* red-500   */
+      --ring:rgba(124,58,237,.35);
+      --max:1100px;
+      --header-h:56px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background: var(--bg); /* gradients liegen auf .bg-layer (fixiert) */
+      line-height:1.6;
+    }
+    a{color:var(--brand);text-decoration:none}
+    a:hover{opacity:.9}
+    .container{max-width:var(--max);margin:0 auto;padding:0 28px}
+
+    /* ===== Fixierter Gradient-Layer (stabil auf Mobile) ===== */
+    .bg-layer{
+      position:fixed; inset:0; z-index:-1; pointer-events:none;
+      background:
+        radial-gradient(1200px 600px at 80% -10%, rgba(124,58,237,.25), transparent 60%),
+        radial-gradient(800px 400px at 10% 0%, rgba(34,197,94,.15), transparent 70%);
+    }
+    html[data-theme="light"] .bg-layer{
+      background:
+        radial-gradient(1200px 600px at 80% -10%, rgba(124,58,237,.10), transparent 60%),
+        radial-gradient(800px 400px at 10% 0%, rgba(34,197,94,.08), transparent 70%);
+    }
+
+    /* ===== Header / Nav ===== */
+    header{
+      position:sticky; top:0; z-index:40;
+      background:rgba(15,23,42,.7); backdrop-filter:blur(10px);
+      border-bottom:1px solid rgba(255,255,255,.08)
+    }
+    header .nav{min-height:var(--header-h)}
+    .nav{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:8px 0}
+    .nav-left{display:flex; align-items:center; gap:12px}
+    .nav-center{display:flex; align-items:center; gap:18px}
+    .nav-right{display:flex; align-items:center; gap:10px}
+
+    .logo{display:flex;align-items:center;gap:12px;font-weight:700}
+    .logo-badge{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--brand),#9333ea);display:grid;place-items:center;box-shadow:0 10px 30px rgba(124,58,237,.35)}
+    .logo-badge svg{width:22px;height:22px;fill:var(--brand-contrast)}
+    .nav-center a{color:var(--text)}
+
+    .cta{
+      display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:999px;
+      background:linear-gradient(135deg,var(--brand),#5b21b6);color:var(--brand-contrast);
+      box-shadow:0 10px 25px rgba(124,58,237,.35);
+      border:1px solid rgba(255,255,255,.08); white-space:nowrap
+    }
+    .cta.secondary{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.18)}
+    .iconbtn{display:inline-grid;place-items:center;border:1px solid rgba(255,255,255,.18);background:transparent;border-radius:12px;padding:8px 10px;color:var(--text);cursor:pointer}
+
+    #menuToggle{display:none}
+    .nav-center{display:flex}
+
+    /* Mobile panel (dropdown) */
+    #mobilePanel{
+      display:none; position:absolute; left:0; right:0; top:100%;
+      background:var(--panel); border-bottom:1px solid rgba(255,255,255,.12);
+      box-shadow:0 12px 30px rgba(0,0,0,.25);
+    }
+    #mobilePanel .panel-inner{padding:18px 28px; display:grid; gap:12px}
+    #mobilePanel a{color:var(--text)}
+
+    /* ===== Hero ===== */
+    .hero{
+      /* Abstand unter Sticky-Header + Safe-Area */
+      padding-top: clamp(110px, 16vh, 160px);
+      padding-bottom: 36px;
+    }
+    @supports (padding-top: env(safe-area-inset-top)){
+      .hero{ padding-top: calc(clamp(110px, 16vh, 160px) + env(safe-area-inset-top)); }
+    }
+    .headline{font-size:clamp(28px,4vw,46px);line-height:1.15;margin:10px 0 14px;font-weight:800}
+    .subtitle{font-size:clamp(16px,2.5vw,20px);color:var(--muted);max-width:720px}
+    .stack{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0 8px}
+    .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:26px 0}
+    .kpi{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:16px}
+    .kpi h3{margin:0;font-size:26px}
+    .pill{display:inline-block;padding:6px 10px;border:1px solid rgba(255,255,255,.18);border-radius:999px;color:var(--muted);font-size:14px;margin-top:6px}
+
+    /* ===== Sections ===== */
+    section{padding:42px 0}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+    .card{background:rgba(17,24,39,.65);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px}
+    .card h3{margin:0 0 6px}
+    .features li{margin:8px 0}
+    ul{padding-left:18px}
+    .cols{display:grid;grid-template-columns:1.5fr 1fr;gap:26px}
+    .price{font-size:36px;font-weight:800}
+    .notice{border-left:4px solid var(--accent);padding:10px 12px;background:rgba(34,197,94,.10);border-radius:12px}
+    .danger{border-left-color:var(--danger);background:rgba(239,68,68,.08)}
+
+    /* ===== Footer ===== */
+    .footer{color:var(--muted);border-top:1px solid rgba(255,255,255,.08);padding:22px 0 60px}
+
+    /* ===== Forms ===== */
+    .ring:focus{outline:none;box-shadow:0 0 0 6px var(--ring)}
+    label{display:block;margin:10px 0 6px}
+    input, textarea{width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:var(--text)}
+    button{cursor:pointer}
+
+    /* ===== Light Theme Overrides ===== */
+    html[data-theme="light"]{
+      --bg:#f8fafc;           /* slate-50   */
+      --panel:#ffffff;        /* white      */
+      --text:#0f172a;         /* slate-900  */
+      --muted:#475569;        /* slate-600  */
+      --brand:#7c3aed;        /* violet-600 */
+      --brand-contrast:#ffffff;
+    }
+    html[data-theme="light"] header{background:rgba(255,255,255,.85);border-bottom:1px solid rgba(2,6,23,.08)}
+    html[data-theme="light"] .card{background:var(--panel);border:1px solid rgba(2,6,23,.08)}
+    html[data-theme="light"] input, html[data-theme="light"] textarea{background:#ffffff;border:1px solid rgba(2,6,23,.14);color:var(--text)}
+    html[data-theme="light"] .iconbtn{border-color:rgba(2,6,23,.18)}
+
+    /* ===== Responsive ===== */
+    @media (max-width: 920px){
+      .cols{grid-template-columns:1fr}
+    }
+    @media (max-width: 820px){
+      .container{padding:0 22px}
+      .nav-center{display:none}
+      #menuToggle{display:inline-grid}
+      .headline{font-size:28px}
+      section{padding:36px 0}
+      .kpi{padding:14px}
+      .hero{ padding-top: calc(120px + env(safe-area-inset-top, 0px)); }
+    }
+    @media (max-width: 420px){
+      .container{padding:0 20px}
+      #mobilePanel .panel-inner{padding:16px 20px}
+      .cta{padding:10px 14px}
+      .iconbtn{padding:8px 10px}
+    }
+  </style>
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Zeman IT",
+    "description": "EDV & IT Hilfe: Computer, Fernseher, Drucker, WLAN, Smartphone – vor Ort oder per Fernwartung.",
+    "image": "https://zeman-it.at/logo.png",
+    "telephone": "+43 660 0000000",
+    "email": "office@zeman-it.at",
+    "url": "https://zeman-it.at",
+    "areaServed": "Wien & Umgebung",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "—",
+      "addressLocality": "Wien",
+      "postalCode": "—",
+      "addressCountry": "AT"
+    },
+    "openingHoursSpecification": [{
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+      "opens": "09:00",
+      "closes": "18:00"
+    }],
+    "priceRange": "€€"
+  }
+  </script>
+</head>
+<body>
+  <!-- Fixed gradient background -->
+  <div class="bg-layer" aria-hidden="true"></div>
+
+  <!-- Header / Nav -->
+  <header>
+    <div class="container nav">
+      <div class="nav-left">
+        <a class="logo" href="#top" aria-label="Zeman IT – Start">
+          <span class="logo-badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M3 6a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Zm13 0a3 3 0 0 1 3-3h2a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-2a3 3 0 0 1-3-3V6Z"/></svg>
+          </span>
+          <span>Zeman IT</span>
+        </a>
+      </div>
+
+      <nav class="nav-center" aria-label="Hauptnavigation">
+        <a href="#leistungen">Leistungen</a>
+        <a href="#preise">Preise</a>
+        <a href="#ablauf">Ablauf</a>
+        <a href="#faq">FAQ</a>
+        <a href="#kontakt" class="cta">Kontakt</a>
+      </nav>
+
+      <div class="nav-right">
+        <button id="themeToggle" class="iconbtn" aria-label="Design umschalten">🌙</button>
+        <button id="menuToggle" class="iconbtn" aria-label="Menü öffnen/schließen" aria-expanded="false">☰</button>
+      </div>
+
+      <!-- Mobile dropdown panel -->
+      <div id="mobilePanel" role="dialog" aria-label="Mobilmenü">
+        <div class="panel-inner">
+          <a href="#leistungen">Leistungen</a>
+          <a href="#preise">Preise</a>
+          <a href="#ablauf">Ablauf</a>
+          <a href="#faq">FAQ</a>
+          <a href="#kontakt" class="cta">Kontakt</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <div class="container hero" id="top">
+    <span class="pill">Schnelle Hilfe vor Ort &amp; per Fernwartung</span>
+    <h1 class="headline">EDV &amp; IT Hilfe – einfach, verständlich, fair.</h1>
+    <p class="subtitle">Ich helfe Ihnen bei <strong>Computer</strong>, <strong>Fernseher</strong>, <strong>Drucker</strong>, <strong>WLAN</strong> und <strong>Handy</strong>. Ohne Fachchinesisch – dafür mit Geduld und fairen Preisen. Einsatzgebiet: <em>Sigleß &amp; Umgebung</em>.</p>
+    <div class="stack">
+      <a class="cta" href="tel:+436600000000" aria-label="Jetzt anrufen">📞 Jetzt anrufen</a>
+      <a class="cta secondary" href="https://wa.me/436600000000" target="_blank" rel="noopener">WhatsApp</a>
+      <a class="cta secondary" href="#preise">Preise ansehen</a>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><h3>⏱️ 24h</h3><div>Termin in der Regel binnen 24h</div></div>
+      <div class="kpi"><h3>⭐ 5.0</h3><div>zufriedene Kund:innen</div></div>
+      <div class="kpi"><h3>🔒 DSGVO</h3><div>Datenschutz &amp; Diskretion</div></div>
+      <div class="kpi"><h3>🏠 Vor Ort</h3><div>oder per Fernwartung</div></div>
+    </div>
+  </div>
+
+  <!-- Leistungen -->
+  <section id="leistungen">
+    <div class="container">
+      <h2>Leistungen</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Computer &amp; Laptop</h3>
+          <ul class="features">
+            <li>Einrichtung, Updates, Virenschutz</li>
+            <li>Datenrettung &amp; Sicherung</li>
+            <li>Beschleunigung &amp; Aufrüstung (SSD/RAM)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>WLAN &amp; Netzwerk</h3>
+          <ul class="features">
+            <li>WLAN-Optimierung &amp; Mesh</li>
+            <li>Router, Drucker &amp; NAS einrichten</li>
+            <li>Fehlersuche bei Aussetzern</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Smartphone &amp; Tablet</h3>
+          <ul class="features">
+            <li>App-Hilfe, Backups &amp; Umzug</li>
+            <li>Mail &amp; Cloud einrichten</li>
+            <li>Schutz vor Betrug &amp; Phishing</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>TV &amp; Drucker</h3>
+          <ul class="features">
+            <li>Smart-TV einrichten (Streaming, Apps)</li>
+            <li>Drucker anschließen, Treiber &amp; WLAN</li>
+            <li>Fehlermeldungen beheben</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Fernwartung</h3>
+          <ul class="features">
+            <li>Schnelle Hilfe per Telefon &amp; Remote</li>
+            <li>Keine Anfahrt – fair abgerechnet</li>
+            <li>Mit Einverständnis &amp; DSGVO-konform</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Für kleine Unternehmen</h3>
+          <ul class="features">
+            <li>Microsoft 365 / Google Workspace</li>
+            <li>Backup-Strategie &amp; Sicherheit</li>
+            <li>Laufende Betreuung auf Abruf</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Preise + Ablauf -->
+  <section id="preise">
+    <div class="container cols">
+      <div>
+        <h2>Preise</h2>
+        <div class="card">
+          <div class="price">€ 49</div>
+          <div>pro Stunde inkl. USt. (Abrechnung je 15 Min)</div>
+          <ul>
+            <li>Vor Ort in Sigleß – Anfahrt: € 0</li>
+            <li>Außerhalb: € 0,50/km</li>
+            <li>Fernwartung: € 39 / Stunde</li>
+          </ul>
+          <p class="notice">Transparente Fixpreise für Standardpakete auf Anfrage (z. B. PC-Grundsetup, WLAN-Check, TV-Einrichtung).</p>
+        </div>
+      </div>
+      <div>
+        <h2 id="ablauf">So läuft’s</h2>
+        <div class="card">
+          <ol>
+            <li><strong>Kontakt</strong> per Telefon, WhatsApp oder Formular.</li>
+            <li><strong>Kurze Einschätzung</strong> &amp; Terminvereinbarung.</li>
+            <li><strong>Vor Ort / Remote</strong> wird das Problem gelöst.</li>
+            <li><strong>Bezahlung</strong> bar, Karte oder Rechnung.</li>
+          </ol>
+          <p class="danger notice">Keine versteckten Kosten. Sie bekommen vorab eine klare Einschätzung.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bewertungen -->
+  <section>
+    <div class="container">
+      <h2>Was Kund:innen sagen</h2>
+      <div class="grid">
+        <div class="card"><p>„Schnell vor Ort gewesen und meinen Drucker endlich zum Laufen gebracht. Sehr freundlich!“</p><small>– Julia K.</small></div>
+        <div class="card"><p>„Top Beratung beim WLAN – jetzt überall Empfang. Klare Empfehlung!“</p><small>– Markus R.</small></div>
+        <div class="card"><p>„Geduldig erklärt, keine Fachsprache. Gerne wieder.“</p><small>– Esra T.</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="container">
+      <h2>Häufige Fragen</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Bieten Sie Fernwartung an?</h3>
+          <p>Ja, nur mit Ihrer Zustimmung. Sie können jederzeit alles mitverfolgen und abbrechen.</p>
+        </div>
+        <div class="card">
+          <h3>Wochenend- und Notfalltermine?</h3>
+          <p>Nach Verfügbarkeit möglich. Zuschlag: +€ 20/Stunde.</p>
+        </div>
+        <div class="card">
+          <h3>Erfolgsgarantie?</h3>
+          <p>„No-Fix, No-Fee“ für Standardprobleme: Wenn sich nichts verbessern lässt, zahlen Sie nichts außer Anfahrt.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Kontakt -->
+  <section id="kontakt">
+    <div class="container cols">
+      <div>
+        <h2>Kontakt</h2>
+        <p>Rufen Sie an, schreiben Sie mir oder nutzen Sie das Formular – ich melde mich rasch.</p>
+        <p>
+          <strong>Telefon:</strong> <a href="tel:+436600000000">+43 660 0000000</a><br/>
+          <strong>E-Mail:</strong> <a href="mailto:office@zeman-it.at">office@zeman-it.at</a><br/>
+          <strong>WhatsApp:</strong> <a href="https://wa.me/436600000000" target="_blank" rel="noopener">Chat starten</a>
+        </p>
+        <p><strong>Einsatzgebiet:</strong> Sigleß &amp; Umgebung</p>
+      </div>
+      <div>
+        <form class="card" action="https://formspree.io/f/your-id" method="POST">
+          <label for="name">Name</label>
+          <input id="name" name="name" required class="ring" />
+
+          <label for="email">E-Mail</label>
+          <input id="email" name="email" type="email" required class="ring" />
+
+          <label for="msg">Nachricht</label>
+          <textarea id="msg" name="message" rows="4" placeholder="Wobei kann ich helfen?" class="ring" required></textarea>
+
+          <label class="ring" style="display:flex;gap:8px;align-items:flex-start;background:none;border:none;box-shadow:none;padding:0;margin-top:8px">
+            <input type="checkbox" required style="margin-top:4px"/>
+            <small style="color:var(--muted)">Ich stimme zu, dass meine Angaben zur Kontaktaufnahme gespeichert und verarbeitet werden. Details in der <a href="/datenschutz">Datenschutzerklärung</a>.</small>
+          </label>
+
+          <div class="stack" style="margin-top:12px">
+            <button type="submit" class="cta">Nachricht senden</button>
+            <a class="cta secondary" href="tel:+436600000000">Oder anrufen</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="grid">
+        <div>
+          <strong>Zeman IT</strong><br/>
+          7032 Sigleß<br/>
+          <a href="mailto:office@zeman-it.at">office@zeman-it.at</a>
+        </div>
+        <div>
+          <a href="/impressum">Impressum</a> · <a href="/datenschutz">Datenschutz</a>
+          <!-- <div style="margin-top:6px">UID-Nr.: — · Firmenbuch: —</div> -->
+        </div>
+      </div>
+      <p style="margin-top:14px">© <span id="year"></span> Zeman IT · Alle Rechte vorbehalten.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Jahr
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Theme: saved -> system -> default
+    (function(){
+      const KEY = 'zeman-theme';
+      const root = document.documentElement;
+      const btn  = document.getElementById('themeToggle');
+      const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      const saved = localStorage.getItem(KEY) || prefers;
+
+      function apply(t){
+        root.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
+        if(btn) btn.textContent = t === 'light' ? '🌙' : '☀️';
+      }
+      apply(saved);
+
+      if(btn){
+        btn.addEventListener('click', () => {
+          const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+          localStorage.setItem(KEY, next);
+          apply(next);
+        });
+      }
+    })();
+
+    // Mobile menu (full width panel)
+    (function(){
+      const btn = document.getElementById('menuToggle');
+      const panel = document.getElementById('mobilePanel');
+      if(!btn || !panel) return;
+
+      const openPanel = () => { panel.style.display = 'block'; btn.setAttribute('aria-expanded','true'); };
+      const closePanel = () => { panel.style.display = 'none'; btn.setAttribute('aria-expanded','false'); };
+
+      btn.addEventListener('click', ()=>{ (panel.style.display === 'block' ? closePanel : openPanel)(); });
+
+      panel.querySelectorAll('a').forEach(a => a.addEventListener('click', closePanel));
+      window.addEventListener('resize', ()=>{ if(window.innerWidth > 820){ closePanel(); }});
+      document.addEventListener('click', (e)=>{
+        if(!panel.contains(e.target) && !btn.contains(e.target)){ closePanel(); }
+      });
+    })();
+  </script>
+</body>
+</html>
