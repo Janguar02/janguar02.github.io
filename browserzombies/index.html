@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+		<title>Browser Zombies - Godot Prototype</title>
+		<!-- Custom shell for Browser Zombies (export/web_shell.html, see WEB_BUILD.md). -->
+		<style>
+html, body, #canvas { margin: 0; padding: 0; border: 0; }
+body { color: #e8e8e8; background-color: #08090b; overflow: hidden; touch-action: none;
+	font-family: 'Segoe UI', 'Noto Sans', Arial, sans-serif; }
+#canvas { display: block; }
+#canvas:focus { outline: none; }
+#status { position: absolute; inset: 0; background: #08090b; display: flex; flex-direction: column;
+	justify-content: center; align-items: center; gap: 14px; visibility: hidden; z-index: 2; }
+#status h1 { margin: 0; font-size: 42px; letter-spacing: 1px; font-weight: 900; }
+#status-bar { position: relative; overflow: hidden; width: min(460px, 80vw); height: 6px; background: rgba(255,255,255,0.08); }
+#status-fill { height: 100%; width: 0%; background: #f26b2e; transition: width 0.15s; }
+#status-bar::after { content: ""; position: absolute; inset: 0; width: 30%; background: rgba(255,255,255,0.28); transform: translateX(-120%); animation: boot-scan 1.2s linear infinite; will-change: transform; }
+@keyframes boot-scan { to { transform: translateX(440%); } }
+#status-text { font-size: 13px; opacity: 0.6; letter-spacing: 2px; }
+#status-notice { display: none; max-width: 640px; margin: 0 1.5rem; padding: 1.2rem 1.4rem; line-height: 1.5;
+	background: #2a1518; border: 1px solid #9b3943; border-radius: 6px; font-size: 15px; }
+#status-notice code { background: rgba(255,255,255,0.1); padding: 1px 5px; border-radius: 3px; }
+		</style>
+		<script>
+// Live Server (VS Code) injects a WebSocket that reloads the page on EVERY file change in the
+// workspace. While Godot exports or the editor re-imports, that restarts the 60 MB engine many
+// times per second on half-written files – the browser hangs. Block that reload socket here.
+(function () {
+	const NativeWS = window.WebSocket;
+	window.WebSocket = function (url, protocols) {
+		if (typeof url === 'string' && /\/ws$/.test(url) && url.indexOf(location.host) !== -1) {
+			console.info('[BrowserZombies] Live-reload socket blocked (see WEB_BUILD.md).');
+			return { send() {}, close() {}, addEventListener() {}, readyState: 3 };
+		}
+		return protocols === undefined ? new NativeWS(url) : new NativeWS(url, protocols);
+	};
+	window.WebSocket.prototype = NativeWS.prototype;
+	Object.assign(window.WebSocket, { CONNECTING: 0, OPEN: 1, CLOSING: 2, CLOSED: 3 });
+}());
+		</script>
+		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
+<link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
+
+	</head>
+	<body>
+		<canvas id="canvas">Your browser does not support the canvas tag.</canvas>
+		<noscript>Your browser does not support JavaScript.</noscript>
+		<div id="status">
+			<h1>BROWSER ZOMBIES</h1>
+			<div id="status-bar"><div id="status-fill"></div></div>
+			<div id="status-text">LOADING ENGINE</div>
+			<div id="status-notice"></div>
+		</div>
+
+		<script>
+// Background shader precompile (export/shader_precompile.js, PERFORMANCE_AUDIT.md "Web startup"):
+// starts before the engine is even downloaded. Godot reads window.bzShaders (progress) and calls
+// window.bzShadersPrioritize(map) when the player picks a map. ?precompile=0 disables it (A/B).
+(function () {
+	const q = new URLSearchParams(location.search);
+	window.bzShaders = {state: 'off', done: 0, total: 0, by_map: {}};
+	window.bzShadersPrioritize = function () {};
+	if (q.get('precompile') === '0' || typeof Worker === 'undefined' || typeof OffscreenCanvas === 'undefined') return;
+	let map = q.get('map');
+	try { map = map || localStorage.getItem('bz_last_map'); } catch (e) {}
+	const w = new Worker('shader_precompile.js');
+	window.bzShaders.state = 'loading';
+	window.bzShaders.started = performance.now();
+	w.onmessage = (e) => {
+		const d = e.data, s = window.bzShaders;
+		if (d.progress) { s.state = 'compiling'; s.done = d.done; s.total = d.total; s.by_map = d.by_map; }
+		if (d.finished) { s.state = d.failed < 0 ? 'error' : 'done'; s.ms = d.ms; s.failed = d.failed; if (d.error) s.error = d.error; }
+	};
+	w.postMessage({url: 'shaders.json.gz', map: map || 'facility', direct: !!q.get('map')});
+	window.bzShadersPrioritize = function (m) {
+		try { localStorage.setItem('bz_last_map', m); } catch (e) {}
+		w.postMessage({prioritize: m});
+	};
+}());
+		</script>
+		<script src="index.js"></script>
+		<script>
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":43001360,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+const GODOT_THREADS_ENABLED = false;
+const engine = new Engine(GODOT_CONFIG);
+
+(function () {
+	const overlay = document.getElementById('status');
+	const fill = document.getElementById('status-fill');
+	const text = document.getElementById('status-text');
+	const notice = document.getElementById('status-notice');
+	overlay.style.visibility = 'visible';
+
+	function fail(html) {
+		notice.innerHTML = html;
+		notice.style.display = 'block';
+		document.getElementById('status-bar').style.display = 'none';
+		text.style.display = 'none';
+	}
+
+	if (location.protocol === 'file:') {
+		fail('<b>Dieses Spiel kann nicht per Doppelklick (file://) gestartet werden.</b><br>' +
+			'Browser blockieren das Laden von <code>index.wasm</code> / <code>index.pck</code> von der Festplatte (CORS).<br><br>' +
+			'Starte stattdessen im Projektordner <code>run_web.bat</code><br>und öffne <code>http://localhost:8000</code>.');
+		return;
+	}
+
+	const missing = Engine.getMissingFeatures({ threads: GODOT_THREADS_ENABLED });
+	if (missing.length !== 0) {
+		fail('<b>Dem Browser fehlen benötigte Funktionen:</b><br>' + missing.join('<br>') +
+			'<br><br>Bitte aktuelles Chrome, Edge, Brave oder Firefox verwenden (WebGL 2).');
+		return;
+	}
+
+	engine.startGame({
+		'onProgress': function (current, total) {
+			if (current > 0 && total > 0) {
+				fill.style.width = (current / total * 100).toFixed(1) + '%';
+				text.textContent = current >= total ? 'INITIALIZING RENDERER / SHADERS' : 'LOADING ENGINE  ' + (current / 1048576).toFixed(0) + ' / ' + (total / 1048576).toFixed(0) + ' MB';
+			}
+		},
+	}).then(() => {
+		overlay.remove();
+	}, (err) => {
+		console.error(err);
+		fail('<b>Start fehlgeschlagen:</b><br>' + String(err && err.message ? err.message : err) +
+			'<br><br>Läuft der Server noch? Siehe WEB_BUILD.md.');
+	});
+}());
+		</script>
+	</body>
+</html>
+
