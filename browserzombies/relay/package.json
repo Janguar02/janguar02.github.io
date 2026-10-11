@@ -1,0 +1,16 @@
+{
+  "name": "browserzombies-relay",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lobby + WebSocket relay for Browser Zombies multiplayer (MULTIPLAYER.md). No accounts, no game logic.",
+  "main": "server.js",
+  "type": "commonjs",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "ws": "8.18.0"
+  }
+}

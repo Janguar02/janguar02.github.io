@@ -1,0 +1,17 @@
+# VPS (systemd): copy relay/ to /opt/browserzombies-relay, npm ci --omit=dev, then
+#   sudo cp browserzombies-relay.service /etc/systemd/system/ && sudo systemctl enable --now browserzombies-relay
+# Put Caddy / nginx in front for TLS (wss://), see MULTIPLAYER.md.
+[Unit]
+Description=Browser Zombies lobby relay
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/browserzombies-relay
+ExecStart=/usr/bin/node server.js
+Environment=PORT=8090
+Restart=always
+User=nobody
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
